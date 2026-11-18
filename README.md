@@ -55,6 +55,17 @@ resource "docker_image" "nginx" {
 keep_locally (Boolean) — If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker local storage on destroy operation.
 ```
 
+Вопросы:
+В каком файле по .gitignore допустимо хранить секреты?
+Файл personal.auto.tfvars.
+```
+Это личный файл переменных: суффикс .auto.tfvars означает, что Terraform загружает его автоматически (не нужно указывать -var-file). Главное условие — файл исключён через .gitignore, поэтому он не попадает в репозиторий.
+```
+
+В чём заключались намеренно допущенные ошибки из terraform validate
+```
+Были добавлены намеренные ошибки: отсутствующее имя блока docker_image, имя ресурса docker_container, начинающееся с цифры (1nginx), и ссылка на несуществующую сущность (random_string_FAKE.resulT). После исправлений terraform validate вернул «No errors».
+```
 
 ## Решение
 ```Команда terraform destroy убрала управление ресурсом из состояния («3 destroyed», в том числе docker_image.nginx), но сам Docker-образ nginx:latest остался в локальном хранилище: атрибут keep_locally = true специально отключает удаление образа при операции destroy.
